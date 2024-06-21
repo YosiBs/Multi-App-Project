@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">app-name</string>
+    <string name="title">Trivia Game</string>
+    <string name="question_headline">Who is that Character</string>
+</resources>

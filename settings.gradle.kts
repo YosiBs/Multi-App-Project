@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 rootProject.name = "MultiAppProject-Ex"
 include(":disney")
 include(":pokemons")
+include(":common")
