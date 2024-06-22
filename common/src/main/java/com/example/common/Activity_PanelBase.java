@@ -1,5 +1,6 @@
 package com.example.common;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -31,7 +32,9 @@ public class Activity_PanelBase extends AppCompatActivity {
     Handler handler = new Handler();
     public static final String BEST_SCORE ="BEST_SCORE";
     private int bestScore;
+    private MediaPlayer[] mpCardArray;
 
+    private MediaPlayer mpWrong;
 
 
     @Override
@@ -41,10 +44,20 @@ public class Activity_PanelBase extends AppCompatActivity {
         SharedPreferencesManager.init(getApplicationContext());
         findViews();
         initViews();
+        initSounds();
         gm = new GameManager();
 
     }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Release the MediaPlayer when done
+        if (mpWrong != null) {
+            mpWrong.release();
+            mpWrong = null;
+        }
 
+    }
     private void findViews() {
         cardArray = new ShapeableImageView[]{
                 findViewById(R.id.card_0),
@@ -52,6 +65,8 @@ public class Activity_PanelBase extends AppCompatActivity {
                 findViewById(R.id.card_2),
                 findViewById(R.id.card_3),
         };
+
+
         panel_LBL_lvl = findViewById(R.id.panel_LBL_lvl);
         start_BTN = findViewById(R.id.start_BTN);
         panel_LBL_best_score = findViewById(R.id.panel_LBL_best_score);
@@ -77,16 +92,31 @@ public class Activity_PanelBase extends AppCompatActivity {
         panel_LBL_best_score.setText(String.valueOf(bestScore));
     }
 
+    private void initSounds(){
+        mpCardArray = new MediaPlayer[]{
+            MediaPlayer.create(this, R.raw.red),
+            MediaPlayer.create(this, R.raw.green),
+            MediaPlayer.create(this, R.raw.yellow),
+            MediaPlayer.create(this, R.raw.blue),
+        };
+        mpWrong = MediaPlayer.create(this, R.raw.wrong);
+    }
     private void cardClickHandler(int number) {
         ShapeableImageView card = cardArray[number];
-
+        MediaPlayer sound = mpCardArray[number];
         handler.postDelayed(() -> {
             // Highlight the card by scaling up
             card.animate().scaleX(1.2f).scaleY(1.2f).setDuration(250).withEndAction(() -> {
                 handler.postDelayed(() -> {
+                    if (sound != null) {
+                        sound.start();
+                    } else {
+                        // Handle the error
+                        Log.e("ggg", "MediaPlayer initialization failed");
+                    }
                     // Revert the card size back to normal
                     card.animate().scaleX(1f).scaleY(1f).setDuration(250);
-                }, 300); // Highlight duration
+                }, 150); // Highlight duration
             });
         }, 50);
         if(gm.isStarted()){
@@ -111,6 +141,7 @@ public class Activity_PanelBase extends AppCompatActivity {
 
     private void gameOver() {
         gm.setStarted(false);
+        mpWrong.start();
         panel_LBL_lvl.setText("Game Over - lvl: " + gm.getCurrentLevel());
 
         if(gm.getCurrentLevel() > bestScore){
@@ -139,13 +170,14 @@ public class Activity_PanelBase extends AppCompatActivity {
         for (int i = 0; i < gamePattern.size(); i++) {
             int cardIndex = gamePattern.get(i);
             ShapeableImageView card = cardArray[cardIndex];
-
+            MediaPlayer sound = mpCardArray[cardIndex];
             int delay = i * 1000; // 1 second interval
 
             handler.postDelayed(() -> {
                 // Highlight the card by scaling up
                 card.animate().scaleX(1.2f).scaleY(1.2f).setDuration(250).withEndAction(() -> {
                     handler.postDelayed(() -> {
+                        sound.start();
                         // Revert the card size back to normal
                         card.animate().scaleX(1f).scaleY(1f).setDuration(250);
                     }, 500); // Highlight duration
