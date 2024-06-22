@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">MultiAppProject-Ex</string>
+    <string name="app_name">Disney Says</string>
+    <string name="title">Simon Says - Disney</string>
 </resources>

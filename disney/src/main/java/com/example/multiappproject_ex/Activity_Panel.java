@@ -4,12 +4,13 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class Activity_Panel extends AppCompatActivity {
+import com.example.common.Activity_PanelBase;
+
+public class Activity_Panel extends Activity_PanelBase {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
     }
 }
